@@ -3,6 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const {default:helmet} = require('helmet');
 const compression = require('compression');
+const router = require('../src/routes/index')
 const app = express();
 
 
@@ -18,12 +19,7 @@ require('./dbs/init.mongodb')
 
 
 //init routes
-app.get('/',(req,res,next)=>{
-    return res.status(200).json({
-        message: "Welcome to my app of Jake",
-    })
-})
-
+app.use('',router)
 //init middleware
 
 //handle error
