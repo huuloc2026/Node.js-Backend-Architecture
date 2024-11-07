@@ -1,44 +1,47 @@
-'use strict'
-const mongoose = require('mongoose');
-const connectString = process.env.MONGODB_CONNECTSTRING;
-const {countConnect} = require('../helpers/check.connect')
+"use strict";
+const mongoose = require("mongoose");
 
-// try {
-//     mongoose.connect(connectString);
-//     console.log("Success connected db")
-//   } 
-// catch (error) {
-//     handleError(error);
-// }
+const InforDB = {
+  MONGODB_USERNAME: process.env.MONGODB_USERNAME,
+  MONGODB_PASSWORD: process.env.MONGODB_PASSWORD,
+  MONGODB_DB_NAME: process.env.MONGODB_DB_NAME,
+};
+
+const connectString =
+  `mongodb+srv://${InforDB.MONGODB_USERNAME}:${InforDB.MONGODB_PASSWORD}@cluster0.20izq.mongodb.net/${InforDB.MONGODB_DB_NAME}?retryWrites=true&w=majority`;
+// const connectString = process.env.MONGODB_CONNECTSTRING;
+// const connectString = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.20izq.mongodb.net/${process.env.MONGODB_DB_NAME}?retryWrites=true&w=majority`.toString();
+console.log(connectString);
+const { countConnect } = require("../helpers/check.connect");
+
 class Database {
-    constructor(){
-        this.connect()
+  constructor() {
+    this.connect();
+  }
+  //connect
+  async connect(type = "mongodb") {
+    try {
+      if (1 === 1) {
+        mongoose.set("debug", true);
+        mongoose.set("debug", { color: true });
+      }
+      await mongoose.connect(`${connectString}`, {
+        maxPoolSize: 50,
+      });
+      console.log("Success connected db");
+      countConnect();
+    } catch (error) {
+      handleError(error);
+      console.error("Database connection error:", error);
     }
-    //connect
-    async connect(type='mongodb'){
-        try {
-            if (1===1){
-                mongoose.set('debug',true)
-                mongoose.set('debug',{color:true})
-            }
-            await mongoose.connect(connectString,{
-                maxPoolSize:50
-                })
-            console.log("Success connected db")
-            countConnect()
-          } 
-        catch (error) {
-            handleError(error);
-            console.error("Database connection error:", error);
-        }
+  }
+  static getInstance() {
+    if (!Database.instance) {
+      Database.instance = new Database();
     }
-    static getInstance(){
-        if (!Database.instance){
-            Database.instance = new Database()
-        }
-        return Database.instance 
-    }
+    return Database.instance;
+  }
 }
-const instanceMongodb = Database.getInstance()
+const instanceMongodb = Database.getInstance();
 
-module.exports = instanceMongodb
+module.exports = instanceMongodb;

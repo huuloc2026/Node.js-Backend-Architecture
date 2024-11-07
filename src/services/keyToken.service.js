@@ -16,4 +16,4 @@ class KeyTokenService {
     }
 }
 
-module.export = KeyTokenService
+module.exports = KeyTokenService
