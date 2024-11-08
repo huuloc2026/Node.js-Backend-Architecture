@@ -35,8 +35,6 @@ class AccessService {
           
             
             if (newShop){
-               
-                
                 // version easy - public key - privatekey
                 const privateKey= crypto.randomBytes(64).toString('hex');
                 const publicKey= crypto.randomBytes(64).toString('hex');
