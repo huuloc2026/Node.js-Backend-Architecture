@@ -2,7 +2,7 @@
 
 //
 @randomName = USERNAME:++%2a%l5pbbz
-@randomEmail = 711ezxc902zxc79ea4c.9284595f9@huuloc.com
+@randomEmail = abaczxczx1.9284595f9@huuloc.com
 @randomPassword = p:MWGh4R$x#fgyafhAj1
 //
 
