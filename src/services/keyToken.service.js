@@ -1,4 +1,6 @@
 const keytokenModel = require("../models/keytoken.model")
+const successResponse = require('../responses/success.response')
+const errorResponse = require('../responses/error.response');
 
 class KeyTokenService {
     static createKeyToken = async ({userId,publicKey,privateKey}) => {
@@ -12,7 +14,10 @@ class KeyTokenService {
             })
             return token ? token.publicKey : null
         } catch (error) {
-            return error
+            return res.status(500).json(errorResponse(500, 'Internal Server Error', {
+                message: error.message,
+                stack: error.stack, // Optional, could be omitted in production
+            }));
         }
     }
 }

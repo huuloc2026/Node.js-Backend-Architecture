@@ -5,8 +5,10 @@ const { apiKey,checkPermission } = require('../../auth/checkAuth');
 const router = express.Router();
 
 // Check api key
-router.use(apiKey)
-router.use(checkPermission('0000'))
+// router.use(apiKey)
+// router.use(checkPermission('0000'))
+
+
 // Check permission
 
 router.post('/shop/signup',accessController.signUp)

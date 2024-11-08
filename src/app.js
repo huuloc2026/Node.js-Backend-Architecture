@@ -16,6 +16,7 @@ app.use(express.urlencoded({extended:true}))
 
 //init db
 require('./dbs/init.mongodb')
+
 // const {checkOverload} = require('./helpers/check.connect')
 // checkOverload()
 
@@ -25,6 +26,14 @@ app.use('',router)
 
 
 //handle error
+// Global Error Handling Middleware (This should be the last middleware)
+app.use((err, req, res, next) => {
+    res.status(500).json({
+      status: 'error',
+      message: 'Something went wrong!',
+      error: err.message || err,
+    });
+  });
 
 
 module.exports = app
