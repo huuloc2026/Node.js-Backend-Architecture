@@ -9,10 +9,7 @@ const InforDB = {
 
 const connectString =
   `mongodb+srv://${InforDB.MONGODB_USERNAME}:${InforDB.MONGODB_PASSWORD}@cluster0.20izq.mongodb.net/${InforDB.MONGODB_DB_NAME}?retryWrites=true&w=majority`;
-// const connectString = process.env.MONGODB_CONNECTSTRING;
-// const connectString = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.20izq.mongodb.net/${process.env.MONGODB_DB_NAME}?retryWrites=true&w=majority`.toString();
-console.log(connectString);
-const { countConnect } = require("../helpers/check.connect");
+const { countConnect,checkOverload } = require("../helpers/check.connect");
 
 class Database {
   constructor() {
@@ -28,11 +25,12 @@ class Database {
       await mongoose.connect(`${connectString}`, {
         maxPoolSize: 50,
       });
-      console.log("Success connected db");
+      console.log("Success connected db ✅✅✅ ");
       countConnect();
+      //checkOverload()
     } catch (error) {
       handleError(error);
-      console.error("Database connection error:", error);
+      console.error("❌❌❌ Database connection error:", error);
     }
   }
   static getInstance() {

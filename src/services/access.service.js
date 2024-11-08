@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const KeyTokenService = require('../services/keyToken.service')
 const { createTokenPair } = require("../auth/auth.utils");
+const { getInforData } = require("../utils");
 
 const roleShop = {
     SHOP: "SHOP",
@@ -29,35 +30,47 @@ class AccessService {
                 name,
                 email,
                 password: Hashpassword,
-                role: [roleShop.ADMIN,]
+                role: [roleShop.SHOP]
             })
           
-            newShop.save()
+            
             if (newShop){
                 // create privateKey, publicKey
                 const {privateKey,publicKey} = crypto.generateKeyPairSync('rsa',{
                     modulusLength: 4096,
+                    publicKeyEncoding: {
+                        type: "pkcs1",
+                        format: 'pem'
+                    },
+                    privateKeyEncoding: {
+                        type: 'pkcs1',
+                        format: 'pem'
+                    }
                 });
                 const publickeyString = await KeyTokenService.createKeyToken({
                     userId: newShop._id,
                     publicKey,
                 })
-              
+                const publicKeyObject = crypto.createPublicKey(publickeyString)
                 if (!publickeyString){
                     return {
                         code: 'xxx',
                         message: 'public key string error'
                     }
                 }
-                const tokens = await createTokenPair({userId:newShop._id,email},publicKey,privateKey)
+                const tokens = await createTokenPair({userId:newShop._id,email},publicKeyObject,privateKey)
                 console.log(`Create token success:: ${tokens}`)
                 return {
                     code: 201,
                     metadata: {
-                        shop: newShop,
+                        shop: getInforData({fields:['_id','name','email'],object:newShop}),
                         tokens,
                     }
                 }
+            }
+            return {
+                code: 200,
+                metadata: null
             }
 
             } catch (error) {
