@@ -4,11 +4,14 @@ const shopModel = require("../models/shop.model");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const KeyTokenService = require("../services/keyToken.service");
+const { findByEmail } = require("../services/shop.service");
 const { createTokenPair } = require("../auth/auth.utils");
 const { getInforData } = require("../utils");
 
 const successResponse = require("../responses/success.response");
 const errorResponse = require("../responses/error.response");
+const { generateApiKey } = require("../utils/generateApiKey");
+const apiKeyModel = require("../models/apiKey.model");
 
 const roleShop = {
   SHOP: "SHOP",
@@ -17,6 +20,36 @@ const roleShop = {
   ADMIN: "ADMIN",
 };
 class AccessService {
+  static Login = async ({ email, password, refreshToken = null }) => {
+    const foundEmail = await findByEmail({ email });
+    if (!foundEmail) {
+      throw new Error("Error: Shop not register");
+    }
+    const match = bcrypt.compare(password, foundEmail.password);
+    if (!match) {
+      throw new Error("Authentication Error: Password wrong!!");
+    }
+    const publicKey = crypto.randomBytes(64).toString("hex");
+    const privateKey = crypto.randomBytes(64).toString("hex");
+    const tokens = await createTokenPair(
+      { userId: foundEmail._id, email },
+      publicKey,
+      privateKey
+    );
+    await KeyTokenService.createKeyToken(
+      foundEmail._id,
+      publicKey,
+      privateKey,
+      tokens.refreshToken
+    );
+    return successResponse(201, "Success Login", {
+      shop: getInforData({
+        fields: ["_id", "name", "email"],
+        object: foundEmail,
+      }),
+      tokens,
+    });
+  };
   static signUp = async ({ name, email, password }) => {
     try {
       //check email exist
@@ -45,6 +78,7 @@ class AccessService {
           publicKey,
           privateKey,
         });
+
         if (!keyStore) {
           throw new Error("Failed to store keys in the key store");
         }
@@ -53,7 +87,12 @@ class AccessService {
           publicKey,
           privateKey
         );
-        console.log(`Create token success:: ${tokens}`);
+        const newApiKey = await apiKeyModel.create({
+          user: newShop._id, // link to the shop model (user)
+          key: generateApiKey(), // store the generated key
+          createdAt: new Date(),
+        });
+
         return successResponse(201, "Shop created successfully", {
           shop: getInforData({
             fields: ["_id", "name", "email"],
@@ -64,7 +103,7 @@ class AccessService {
       }
       throw new Error("Failed to create the shop");
     } catch (error) {
-      throw new Error(error.message || "Internal Server Error");
+      throw new Error(error.message);
     }
   };
 }

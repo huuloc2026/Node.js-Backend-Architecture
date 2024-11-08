@@ -1,25 +1,37 @@
-const keytokenModel = require("../models/keytoken.model")
-const successResponse = require('../responses/success.response')
-const errorResponse = require('../responses/error.response');
+const keytokenModel = require("../models/keytoken.model");
+const successResponse = require("../responses/success.response");
+const errorResponse = require("../responses/error.response");
 
 class KeyTokenService {
-    static createKeyToken = async ({userId,publicKey,privateKey}) => {
+  static createKeyToken = async ({
+    userId,
+    publicKey,
+    privateKey,
+    refreshToken,
+  }) => {
+    try {
+      //version2
+      const filter = { user: userId };
+      const update = {
+        publicKey,
+        privateKey,
+        refreshTokenUsed: [],
+        refreshToken,
+      };
+      const options = { upsert: true, new: true };
 
-        try {
-            
-            const token = await keytokenModel.create({
-                user: userId,
-                publicKey,
-                privateKey
-            })
-            return token ? token.publicKey : null
-        } catch (error) {
-            return res.status(500).json(errorResponse(500, 'Internal Server Error', {
-                message: error.message,
-                stack: error.stack, // Optional, could be omitted in production
-            }));
-        }
+      const tokens = await keytokenModel.findOneAndUpdate(
+        filter,
+        update,
+        options
+      );
+
+      console.log("tokens::::", tokens);
+      return tokens ? tokens.publicKey : null;
+    } catch (error) {
+      return error.message;
     }
+  };
 }
 
-module.exports = KeyTokenService
+module.exports = KeyTokenService;

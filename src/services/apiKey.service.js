@@ -1,13 +1,17 @@
-'use strict'
-const crypto = require('crypto')
-const apiKeyModel = require("../models/apiKey.model")
+"use strict";
+const apiKeyModel = require("../models/apiKey.model");
 
 const findbyID = async (key) => {
-    const testKey = await apiKeyModel.create({key: crypto.randomBytes(10).toString('hex'),permissions: '0000'})
-    console.log(testKey);
-    const objectKey = await apiKeyModel.findOne({key,status:true}).lean()
-    return objectKey
-}
+  try {
+    const objectKey = await apiKeyModel.findOne({ key, status: true }).lean();
+    if (!objectKey) {
+      throw new Error("API key not found");
+    }
+    return objectKey;
+  } catch (error) {
+    throw new Error(`Error fetching API key: ${error.message}`);
+  }
+};
 module.exports = {
-    findbyID
-}
+  findbyID,
+};
