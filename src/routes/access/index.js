@@ -12,6 +12,6 @@ const router = express.Router();
 // Check permission
 
 router.post("/shop/signup", accessController.signUp);
-router.post("/shop/login", apiKey, accessController.Login);
+router.post("/shop/login", accessController.Login);
 
 module.exports = router;

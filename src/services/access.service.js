@@ -20,7 +20,7 @@ const roleShop = {
   ADMIN: "ADMIN",
 };
 class AccessService {
-  static LogOut = async();
+  // static LogOut = async();
   static Login = async ({ email, password, refreshToken = null }) => {
     const foundEmail = await findByEmail({ email });
     if (!foundEmail) {
@@ -89,7 +89,7 @@ class AccessService {
           privateKey
         );
         const newApiKey = await apiKeyModel.create({
-          user: newShop._id, // link to the shop model (user)
+          user: newShop._id, //
           key: generateApiKey(), // store the generated key
           createdAt: new Date(),
         });
