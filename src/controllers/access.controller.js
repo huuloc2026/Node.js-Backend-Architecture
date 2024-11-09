@@ -6,7 +6,6 @@ class AccessController {
   Login = async (req, res, next) => {
     try {
       const resultLogin = await AccessService.Login(req.body);
-
       return res
         .status(201)
         .json(

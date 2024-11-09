@@ -20,6 +20,7 @@ const roleShop = {
   ADMIN: "ADMIN",
 };
 class AccessService {
+  static LogOut = async();
   static Login = async ({ email, password, refreshToken = null }) => {
     const foundEmail = await findByEmail({ email });
     if (!foundEmail) {

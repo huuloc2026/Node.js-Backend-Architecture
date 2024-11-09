@@ -4,11 +4,13 @@ const morgan = require("morgan");
 const { default: helmet } = require("helmet");
 const compression = require("compression");
 const router = require("../src/routes/index");
+const cors = require("cors");
 const app = express();
 
 //init middleware
 app.use(morgan("dev"));
 app.use(helmet());
+app.use(cors());
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -34,13 +36,13 @@ app.use((err, req, res, next) => {
 if (process.env.NODE_ENV === "development") {
   process.on("unhandledRejection", (err) => {
     console.error("Unhandled Rejection:", err);
-    process.exit(1); // Exit the process with failure code
+    process.exit(1);
   });
 
   // Catch uncaught exceptions
   process.on("uncaughtException", (err) => {
-    console.error("Uncaught Exception:", err);
-    process.exit(1); // Exit the process with failure code
+    console.error("Uncaught Exception: 💣 🔥 stopping the server...", err);
+    process.exit(1);
   });
 }
 
